@@ -168,7 +168,7 @@ export async function generateContent(
     hashtags: hashtagize(theme),
     visualPrompt: `Cena minimalista em alto contraste preto e branco representando ${theme}, iluminação cinematográfica suave, textura de grão fina, composição vertical 9:16, sem texto na imagem.`,
     disclaimer:
-      "Conteúdo gerado como demonstração. Dados fictícios, sem informações factuais verificadas.",
+      "Revise o roteiro antes de publicar: dados, números e afirmações devem ser confirmados na fonte.",
   };
 }
 

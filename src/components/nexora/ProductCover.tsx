@@ -23,6 +23,19 @@ export function ProductCover({
   className?: string;
   size?: "md" | "lg";
 }) {
+  if (product.image) {
+    return (
+      <div className={cn("overflow-hidden rounded-lg border border-border bg-surface", className)}>
+        <img
+          src={product.image}
+          alt={`Capa da oferta ${product.name}`}
+          loading="lazy"
+          className="h-full w-full object-cover"
+        />
+      </div>
+    );
+  }
+
   const words = product.name.split(" ").filter(Boolean);
   const lines = [words.slice(0, 2).join(" "), words.slice(2).join(" ")].filter(Boolean);
 

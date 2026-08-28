@@ -8,7 +8,7 @@ import { Icon } from "@/components/nexora/Icon";
 import { MetricCard } from "@/components/nexora/MetricCard";
 import { ProductCover } from "@/components/nexora/ProductCover";
 import { SectionHeader } from "@/components/nexora/SectionHeader";
-import { findMiningProduct, miningSignals, mockDataNotice } from "@/services/mock/mining";
+import { findMiningProduct, miningSignals } from "@/services/mock/mining";
 
 export const Route = createFileRoute("/mining/$id")({
   loader: ({ params }) => {
@@ -106,7 +106,6 @@ function MiningDetail() {
             ))}
           </div>
 
-          <p className="mt-6 text-body-sm text-muted-foreground">{mockDataNotice}</p>
         </Card>
       </div>
 

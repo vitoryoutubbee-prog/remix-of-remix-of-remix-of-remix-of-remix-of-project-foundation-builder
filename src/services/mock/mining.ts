@@ -1,7 +1,7 @@
 import type { MiningFilterKey, MiningProduct, MiningSignal, MiningSortKey } from "@/types";
 
 /**
- * MOCK MINING DATA — produtos demonstrativos do MVP.
+ * BASE DE OFERTAS DA MINERAÇÃO.
  * A coleção e as funções abaixo isolam a fonte de dados da interface: para
  * conectar fontes/APIs reais no futuro basta substituir o corpo destas
  * funções mantendo os mesmos tipos.
@@ -190,6 +190,127 @@ export const miningProducts: MiningProduct[] = [
   },
 ];
 
+/**
+ * OFERTAS AINDA NÃO ESCALADAS — o que aparece antes de iniciar a mineração.
+ * Pouco volume de vendas, faturamento baixo e poucos anúncios rodando.
+ */
+export const coldMiningProducts: MiningProduct[] = [
+  {
+    id: "cold-planner-da-semana",
+    name: "PLANNER DA SEMANA",
+    category: "Template",
+    price: "R$ 12",
+    theme: "Produtividade",
+    description:
+      "Planner semanal simples para organizar tarefas e compromissos, ainda sem tração de anúncios.",
+    score: 41,
+    estimatedSales: 38,
+    revenue: "R$ 456",
+    revenueValue: 456,
+    adCount: 1,
+    activeDays: 9,
+    trend: "ESTÁVEL",
+    potential: "BAIXO",
+    trendSeries: [12, 10, 14, 11, 13],
+    stage: "cold",
+  },
+  {
+    id: "cold-receitas-fit-basicas",
+    name: "RECEITAS FIT BÁSICAS",
+    category: "E-book",
+    price: "R$ 15",
+    theme: "Alimentação",
+    description:
+      "E-book de receitas leves para o dia a dia, com poucas vendas e sem estrutura de tráfego.",
+    score: 44,
+    estimatedSales: 61,
+    revenue: "R$ 915",
+    revenueValue: 915,
+    adCount: 2,
+    activeDays: 14,
+    trend: "ESTÁVEL",
+    potential: "BAIXO",
+    trendSeries: [14, 13, 16, 15, 17],
+    stage: "cold",
+  },
+  {
+    id: "cold-primeiros-passos-no-excel",
+    name: "PRIMEIROS PASSOS NO EXCEL",
+    category: "Mini curso",
+    price: "R$ 39",
+    theme: "Capacitação",
+    description:
+      "Mini curso introdutório de planilhas, com audiência pequena e volume de vendas irregular.",
+    score: 47,
+    estimatedSales: 27,
+    revenue: "R$ 1.053",
+    revenueValue: 1053,
+    adCount: 1,
+    activeDays: 21,
+    trend: "ESTÁVEL",
+    potential: "MÉDIO",
+    trendSeries: [18, 16, 19, 17, 20],
+    stage: "cold",
+  },
+  {
+    id: "cold-checklist-de-mudanca",
+    name: "CHECKLIST DE MUDANÇA",
+    category: "Checklist",
+    price: "R$ 9,90",
+    theme: "Casa",
+    description:
+      "Checklist de mudança residencial, produto nichado com faturamento ainda muito baixo.",
+    score: 38,
+    estimatedSales: 44,
+    revenue: "R$ 436",
+    revenueValue: 436,
+    adCount: 1,
+    activeDays: 6,
+    trend: "ESTÁVEL",
+    potential: "BAIXO",
+    trendSeries: [9, 11, 10, 12, 11],
+    stage: "cold",
+  },
+  {
+    id: "cold-guia-do-freelancer-iniciante",
+    name: "GUIA DO FREELANCER INICIANTE",
+    category: "Guia",
+    price: "R$ 19",
+    theme: "Serviços e freelas",
+    description:
+      "Guia inicial para freelancers, testado em poucos criativos e sem escala comprovada.",
+    score: 52,
+    estimatedSales: 96,
+    revenue: "R$ 1.824",
+    revenueValue: 1824,
+    adCount: 3,
+    activeDays: 24,
+    trend: "CRESCENDO",
+    potential: "MÉDIO",
+    trendSeries: [16, 19, 22, 25, 29],
+    stage: "cold",
+  },
+  {
+    id: "cold-pack-de-legendas",
+    name: "PACK DE LEGENDAS PRONTAS",
+    category: "Pack",
+    price: "R$ 17",
+    theme: "Conteúdo",
+    description:
+      "Pack de legendas para redes sociais, com poucas vendas recorrentes e baixo investimento em mídia.",
+    score: 49,
+    estimatedSales: 73,
+    revenue: "R$ 1.241",
+    revenueValue: 1241,
+    adCount: 2,
+    activeDays: 18,
+    trend: "CRESCENDO",
+    potential: "MÉDIO",
+    trendSeries: [13, 15, 18, 20, 24],
+    stage: "cold",
+  },
+];
+
 export const miningFilters: { key: MiningFilterKey; label: string }[] = [
   { key: "todos", label: "Todos" },
   { key: "escalados", label: "Mais escalados" },
@@ -230,12 +351,12 @@ export const miningSearchExamples = [
   "pets",
 ];
 
-export const mockDataNotice = "Dados demonstrativos do MVP.";
-
 const potentialRank: Record<MiningProduct["potential"], number> = {
-  "MUITO ALTO": 3,
-  ALTO: 2,
-  "MÉDIO/ALTO": 1,
+  "MUITO ALTO": 5,
+  ALTO: 4,
+  "MÉDIO/ALTO": 3,
+  "MÉDIO": 2,
+  BAIXO: 1,
 };
 
 function normalize(value: string) {
@@ -246,7 +367,7 @@ function normalize(value: string) {
 }
 
 export function findMiningProduct(id: string): MiningProduct | undefined {
-  return miningProducts.find((p) => p.id === id);
+  return [...miningProducts, ...coldMiningProducts].find((p) => p.id === id);
 }
 
 function matchesFilter(product: MiningProduct, filter: MiningFilterKey) {
@@ -286,14 +407,18 @@ export function queryMiningProducts({
   term = "",
   filter = "todos",
   sort = "score",
+  scaled = true,
 }: {
   term?: string;
   filter?: MiningFilterKey;
   sort?: MiningSortKey;
+  /** true = ofertas escaladas (pós-mineração); false = ofertas ainda não escaladas. */
+  scaled?: boolean;
 }): MiningProduct[] {
+  const source = scaled ? miningProducts : coldMiningProducts;
   const q = normalize(term.trim());
 
-  let list = miningProducts.filter((product) => {
+  let list = source.filter((product) => {
     if (!matchesFilter(product, filter)) return false;
     if (!q) return true;
     return normalize(

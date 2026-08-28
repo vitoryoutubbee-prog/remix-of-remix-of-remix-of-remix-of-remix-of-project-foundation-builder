@@ -10,12 +10,7 @@ import { MiningProductCard } from "@/components/nexora/MiningProductCard";
 import { MiningProgress } from "@/components/nexora/MiningProgress";
 import { SearchBar } from "@/components/nexora/SearchBar";
 import { SectionHeader } from "@/components/nexora/SectionHeader";
-import {
-  miningSearchExamples,
-  miningStages,
-  mockDataNotice,
-  queryMiningProducts,
-} from "@/services/mock/mining";
+import { miningSearchExamples, miningStages, queryMiningProducts } from "@/services/mock/mining";
 import type { MiningFilterKey, MiningSortKey } from "@/types";
 
 const title = "Mineração de produtos — NEXORA";
@@ -41,6 +36,7 @@ function MiningPage() {
   const [filter, setFilter] = useState<MiningFilterKey>("todos");
   const [sort, setSort] = useState<MiningSortKey>("score");
   const [stageIndex, setStageIndex] = useState<number | null>(null);
+  const [mined, setMined] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
@@ -58,11 +54,16 @@ function MiningPage() {
       timers.current.push(setTimeout(() => setStageIndex(i), i * 1000));
     });
     timers.current.push(setTimeout(() => setStageIndex(miningStages.length), 5000));
-    timers.current.push(setTimeout(() => setStageIndex(null), 5800));
+    timers.current.push(
+      setTimeout(() => {
+        setStageIndex(null);
+        setMined(true);
+      }, 5800),
+    );
   }
 
   const mining = stageIndex !== null;
-  const results = queryMiningProducts({ term, filter, sort });
+  const results = queryMiningProducts({ term, filter, sort, scaled: mined });
 
   return (
     <AppLayout>
@@ -125,6 +126,22 @@ function MiningPage() {
         className="mb-8"
       />
 
+      {!mining && !mined ? (
+        <Card className="mb-6 flex flex-wrap items-center justify-between gap-4 p-5">
+          <div>
+            <div className="label-caps text-muted-foreground">Radar base</div>
+            <p className="mt-2 text-body-md text-secondary-foreground">
+              Estas são ofertas ainda não escaladas: poucas vendas, faturamento baixo e quase nenhum
+              anúncio ativo.
+            </p>
+          </div>
+          <Button onClick={() => startMining()} className="whitespace-nowrap">
+            <Icon name="construction" className="text-[16px]" />
+            Iniciar mineração
+          </Button>
+        </Card>
+      ) : null}
+
       {mining ? (
         <MiningProgress stageIndex={stageIndex} />
       ) : results.length === 0 ? (
@@ -149,10 +166,15 @@ function MiningPage() {
         <>
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
             <p className="text-body-sm text-secondary-foreground">
-              {results.length} {results.length === 1 ? "produto minerado" : "produtos minerados"}
-              {term ? ` para “${term}”` : ""}.
+              {mined
+                ? `${results.length} ${results.length === 1 ? "oferta escalada" : "ofertas escaladas"}${term ? ` para “${term}”` : ""}.`
+                : `${results.length} ${results.length === 1 ? "oferta" : "ofertas"} sem escala no radar.`}
             </p>
-            <p className="text-body-sm text-muted-foreground">{mockDataNotice}</p>
+            {!mined ? (
+              <p className="text-body-sm text-muted-foreground">
+                Inicie a mineração para revelar as ofertas escaladas.
+              </p>
+            ) : null}
           </div>
           <div className="grid grid-cols-1 gap-gutter md:grid-cols-2 2xl:grid-cols-3">
             {results.map((product) => (
