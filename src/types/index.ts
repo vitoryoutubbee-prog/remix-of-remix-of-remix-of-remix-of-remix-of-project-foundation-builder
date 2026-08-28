@@ -206,3 +206,84 @@ export interface MiningSignal {
   value: string;
   note: string;
 }
+
+/* ---------- Product Builder ---------- */
+
+export type ProductTypeKey =
+  | "ebook"
+  | "guia"
+  | "checklist"
+  | "template"
+  | "pack"
+  | "curso"
+  | "desafio"
+  | "metodo"
+  | "outro";
+
+export interface ProductTypeOption {
+  key: ProductTypeKey;
+  label: string;
+  icon: string;
+}
+
+export type ProductStatus = "RASCUNHO" | "PRONTO" | "OFERTA CRIADA";
+
+export interface SavedProduct {
+  id: string;
+  name: string;
+  type: string;
+  typeKey: ProductTypeKey;
+  price: string;
+  status: ProductStatus;
+  score: number;
+  image?: string;
+}
+
+export type ProductFilterKey = "todos" | ProductTypeKey;
+
+/** Formulário de criação de produto (do zero ou pré-preenchido pela mineração). */
+export interface ProductDraft {
+  name: string;
+  niche: string;
+  type: ProductTypeKey;
+  problem: string;
+  audience: string;
+  price: string;
+}
+
+export interface ProductModule {
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+}
+
+export interface ProductPricing {
+  min: string;
+  ideal: string;
+  max: string;
+  note: string;
+}
+
+export interface ProductSignal {
+  label: string;
+  value: string;
+}
+
+/** Produto estruturado gerado pela IA (mock por enquanto). */
+export interface GeneratedProduct {
+  name: string;
+  promise: string;
+  audience: string;
+  problem: string;
+  mechanism: string;
+  modules: ProductModule[];
+  bonuses: string[];
+  pricing: ProductPricing;
+  positioning: string;
+  description: string;
+  signals: ProductSignal[];
+  score: number;
+  image?: string;
+  sourceMiningId?: string;
+}
