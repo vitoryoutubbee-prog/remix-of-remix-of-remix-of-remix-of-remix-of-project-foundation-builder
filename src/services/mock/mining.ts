@@ -1,4 +1,46 @@
 import type { MiningFilterKey, MiningProduct, MiningSignal, MiningSortKey } from "@/types";
+import imgMapaRendaExtra from "@/assets/mining/mapa-da-renda-extra.jpg";
+import imgDesafio30Dias from "@/assets/mining/desafio-30-dias.jpg";
+import imgCozinhaLucrativa from "@/assets/mining/cozinha-lucrativa.jpg";
+import imgGuiaPrimeiroCliente from "@/assets/mining/guia-do-primeiro-cliente.jpg";
+import imgRotinaFinanceira from "@/assets/mining/rotina-financeira.jpg";
+import imgCasaOrganizada from "@/assets/mining/casa-organizada.jpg";
+import imgFaceless from "@/assets/mining/faceless-content-machine.jpg";
+import imgMenteOrganizada from "@/assets/mining/mente-organizada.jpg";
+import imgPetFeliz from "@/assets/mining/guia-do-pet-feliz.jpg";
+import imgPrimeiraOferta from "@/assets/mining/crie-sua-primeira-oferta.jpg";
+import imgColdPlanner from "@/assets/mining/cold-planner.jpg";
+import imgColdReceitasFit from "@/assets/mining/cold-receitas-fit.jpg";
+import imgColdExcel from "@/assets/mining/cold-excel.jpg";
+import imgColdMudanca from "@/assets/mining/cold-mudanca.jpg";
+import imgColdFreelancer from "@/assets/mining/cold-freelancer.jpg";
+import imgColdLegendas from "@/assets/mining/cold-legendas.jpg";
+
+/** Imagem de capa por oferta (id → imagem). */
+const miningImages: Record<string, string> = {
+  "mapa-da-renda-extra": imgMapaRendaExtra,
+  "desafio-30-dias-sem-desorganizacao": imgDesafio30Dias,
+  "cozinha-lucrativa": imgCozinhaLucrativa,
+  "guia-do-primeiro-cliente": imgGuiaPrimeiroCliente,
+  "rotina-financeira-descomplicada": imgRotinaFinanceira,
+  "projeto-casa-organizada": imgCasaOrganizada,
+  "faceless-content-machine": imgFaceless,
+  "mente-organizada": imgMenteOrganizada,
+  "guia-do-pet-feliz": imgPetFeliz,
+  "crie-sua-primeira-oferta": imgPrimeiraOferta,
+  "cold-planner-da-semana": imgColdPlanner,
+  "cold-receitas-fit-basicas": imgColdReceitasFit,
+  "cold-primeiros-passos-no-excel": imgColdExcel,
+  "cold-checklist-de-mudanca": imgColdMudanca,
+  "cold-guia-do-freelancer-iniciante": imgColdFreelancer,
+  "cold-pack-de-legendas": imgColdLegendas,
+};
+
+/** Anexa a imagem de capa à oferta, quando existir. */
+function withImage(product: MiningProduct): MiningProduct {
+  const image = miningImages[product.id];
+  return image ? { ...product, image } : product;
+}
 
 /**
  * BASE DE OFERTAS DA MINERAÇÃO.
@@ -367,7 +409,8 @@ function normalize(value: string) {
 }
 
 export function findMiningProduct(id: string): MiningProduct | undefined {
-  return [...miningProducts, ...coldMiningProducts].find((p) => p.id === id);
+  const product = [...miningProducts, ...coldMiningProducts].find((p) => p.id === id);
+  return product ? withImage(product) : undefined;
 }
 
 function matchesFilter(product: MiningProduct, filter: MiningFilterKey) {
@@ -438,7 +481,7 @@ export function queryMiningProducts({
     list = [...list].sort((a, b) => compare(a, b, sort));
   }
 
-  return list;
+  return list.map(withImage);
 }
 
 export function miningSignals(product: MiningProduct): MiningSignal[] {
