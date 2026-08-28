@@ -409,7 +409,8 @@ function normalize(value: string) {
 }
 
 export function findMiningProduct(id: string): MiningProduct | undefined {
-  return [...miningProducts, ...coldMiningProducts].find((p) => p.id === id);
+  const product = [...miningProducts, ...coldMiningProducts].find((p) => p.id === id);
+  return product ? withImage(product) : undefined;
 }
 
 function matchesFilter(product: MiningProduct, filter: MiningFilterKey) {
@@ -480,7 +481,7 @@ export function queryMiningProducts({
     list = [...list].sort((a, b) => compare(a, b, sort));
   }
 
-  return list;
+  return list.map(withImage);
 }
 
 export function miningSignals(product: MiningProduct): MiningSignal[] {
