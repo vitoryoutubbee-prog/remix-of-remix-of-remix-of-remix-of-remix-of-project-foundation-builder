@@ -161,7 +161,8 @@ export interface GeneratedImage {
 export type MiningCategory = "E-book" | "Guia" | "Checklist" | "Template" | "Pack" | "Mini curso";
 
 export type MiningTrend = "ALTA" | "CRESCENDO" | "ESTÁVEL";
-export type MiningPotential = "MUITO ALTO" | "ALTO" | "MÉDIO/ALTO";
+export type MiningPotential = "MUITO ALTO" | "ALTO" | "MÉDIO/ALTO" | "MÉDIO" | "BAIXO";
+export type MiningStage = "cold" | "scaled";
 
 export interface MiningProduct {
   id: string;
@@ -181,6 +182,10 @@ export interface MiningProduct {
   trend: MiningTrend;
   potential: MiningPotential;
   trendSeries: number[];
+  /** Imagem real da oferta (opcional). Sem imagem, usamos a capa procedural. */
+  image?: string;
+  /** cold = oferta ainda não escalada; scaled = oferta escalada. */
+  stage?: MiningStage;
 }
 
 export type MiningFilterKey =
